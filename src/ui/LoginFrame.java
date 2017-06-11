@@ -16,8 +16,10 @@ import ui.MainFrame.MenuItemActionListener;
 public class LoginFrame {
 	public String UserName;
 	public String PassWord;
+	public boolean wannaRegister=false;
+	JFrame logframe;
 	public LoginFrame() {
-		JFrame logframe = new JFrame("Log in");
+		logframe = new JFrame("Log in");
 		logframe.setLayout(new BorderLayout());
 		JPanel LogPanel=new JPanel();
 		JLabel name=new JLabel("User:");
@@ -38,10 +40,13 @@ public class LoginFrame {
 		JButton But2=new JButton("Cancel");
 		JButton But3=new JButton("Register");
 		
-		But1.setBounds(40,180,100,30);
-		But2.setBounds(200,180,100,30);
+		But1.setBounds(20,180,100,20);
+		But2.setBounds(90,180,100,20);
+		But3.setBounds(150,180,100,20);
 		LogPanel.add(But1);
 		LogPanel.add(But2);
+		LogPanel.add(But3);
+		
 		But1.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -49,7 +54,7 @@ public class LoginFrame {
 			/*	logframe.setVisible(false);*/
 				UserName=Name.getText();
 				PassWord=Pass.getText();
-				logframe.setVisible(false);
+				//logframe.setVisible(false);
 			}
 		});
 		But2.addActionListener(new ActionListener(){
@@ -60,6 +65,17 @@ public class LoginFrame {
 				Pass.setText("");
 			}
 		});
+		But3.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				wannaRegister=true;
+			}
+			
+		});
+		
+		
 		LogPanel.setLayout(null);
 		
 		logframe.getContentPane().add(BorderLayout.CENTER, LogPanel);
@@ -68,13 +84,9 @@ public class LoginFrame {
 		logframe.setSize(350, 300);
 		logframe.setLocation(450, 300);
 		logframe.setVisible(true);
-		
-		
-		
-		
-		
-		
-		
+	}
+	public JFrame getFrame(){
+		return logframe;
 	}
 	/*
 	class MouseActionListener implements ActionListener {
