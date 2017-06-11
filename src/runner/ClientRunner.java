@@ -15,8 +15,8 @@ import ui.MainFrame;
 import ui.Register;
 
 public class ClientRunner {
-	private RemoteHelper remoteHelper;//用来和Server相接？？？？
-	
+	private RemoteHelper remoteHelper;//用来和Server相接
+	public static String Client=null;  // getCurrentClient方法  防止同一个账户同时登陆
 	public ClientRunner() throws InterruptedException {
 		linkToServer();
 		initGUI();
@@ -37,9 +37,7 @@ public class ClientRunner {
 		}
 	}
 	
-	
-	
-	private void initGUI() {
+	private void initGUI() throws InterruptedException {
 		MainFrame mainFrame = new MainFrame();
 	}
 	private void login() throws InterruptedException{
@@ -56,7 +54,9 @@ public class ClientRunner {
 			String PassWord=loginFrame.PassWord;
 			try {
 				boolean canLogin=remoteHelper.getUserService().login(UserName, PassWord);
-				if(canLogin==true){
+				if(canLogin==true&&Client==null){
+					Client=UserName;
+					remoteHelper.getUserService().setClient(Client);
 					JOptionPane.showMessageDialog(null, "登录成功"); 
 					loginFrame.getFrame().setVisible(false);
 					AlreadyLogin=true;
@@ -71,9 +71,6 @@ public class ClientRunner {
 				e.printStackTrace();
 			}
 			loginFrame = new LoginFrame();
-			
-			
-			
 		}
 	}
 	
@@ -106,10 +103,9 @@ public class ClientRunner {
 			
 		}
 	}
-	
-	
-	
-	
+	public String getCurrentClient(){
+		return Client;
+	}
 	
 	
 	public void test(){

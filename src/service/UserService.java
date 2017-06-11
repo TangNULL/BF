@@ -10,4 +10,8 @@ public interface UserService extends Remote{
 	public boolean logout(String username) throws RemoteException;
 	
 	public boolean register(String username,String password) throws RemoteException;
-}
+	
+	public void setClient(String username) throws RemoteException;
+	
+	public String getClient() throws RemoteException;
+ }

@@ -13,17 +13,22 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import rmi.RemoteHelper;
+import runner.ClientRunner;
 
 
 public class MainFrame extends JFrame {
 	private JTextArea textArea;
 	private JLabel resultLabel;
-
+	
+	public String code;
+	public boolean wannaExecute=false,wannaNew=false,wannaOpen=false,wannaSave=false,wannaExit=false;
+	public boolean wannaOpenFileList=false;
 	public MainFrame() {
 		// 鍒涘缓绐椾綋
 		JFrame frame = new JFrame("BF Client");
@@ -31,15 +36,24 @@ public class MainFrame extends JFrame {
 
 		JMenuBar menuBar = new JMenuBar();
 		JMenu fileMenu = new JMenu("File");
+		JMenu searchMenu = new JMenu("Search");
+		JMenu runMenu=new JMenu("Run");
 		menuBar.add(fileMenu);
+		menuBar.add(searchMenu);
+		menuBar.add(runMenu);
 		JMenuItem newMenuItem = new JMenuItem("New");
 		fileMenu.add(newMenuItem);
 		JMenuItem openMenuItem = new JMenuItem("Open");
 		fileMenu.add(openMenuItem);
 		JMenuItem saveMenuItem = new JMenuItem("Save");
 		fileMenu.add(saveMenuItem);
-		JMenuItem runMenuItem = new JMenuItem("Run");
-		fileMenu.add(runMenuItem);
+		JMenuItem exitMenuItem = new JMenuItem("Exit");
+		fileMenu.add(exitMenuItem);
+		JMenuItem fileListMenuItem = new JMenuItem("fileList");
+		searchMenu.add(fileListMenuItem);
+		JMenuItem executeMenuItem=new JMenuItem("Execute");
+		runMenu.add(executeMenuItem);
+		
 		frame.setJMenuBar(menuBar);
 		
 		
@@ -47,7 +61,7 @@ public class MainFrame extends JFrame {
 		newMenuItem.addActionListener(new MenuItemActionListener());
 		openMenuItem.addActionListener(new MenuItemActionListener());
 		saveMenuItem.addActionListener(new SaveActionListener());
-		runMenuItem.addActionListener(new MenuItemActionListener());
+		executeMenuItem.addActionListener(new MenuItemActionListener());
 
 		textArea = new JTextArea();
 		textArea.setMargin(new Insets(10, 10, 10, 10));
@@ -56,13 +70,16 @@ public class MainFrame extends JFrame {
 
 		// 鏄剧ず缁撴灉
 		resultLabel = new JLabel();
-		resultLabel.setText("result");
+		resultLabel.setText("result:");
 		frame.add(resultLabel, BorderLayout.SOUTH);
 
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(500, 400);
 		frame.setLocation(400, 200);
 		frame.setVisible(true);
+	}
+	public String setExit(String username){
+		return username;
 	}
 
 	class MenuItemActionListener implements ActionListener {
@@ -73,11 +90,28 @@ public class MainFrame extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			String cmd = e.getActionCommand();
 			if (cmd.equals("Open")) {
-				textArea.setText("Open");
-			} else if (cmd.equals("Save")) {
-				textArea.setText("Save");
-			} else if (cmd.equals("Run")) {
-				resultLabel.setText("Hello, result");
+				
+			} 
+			else if (cmd.equals("Execute")) {
+				wannaExecute=true;
+			} 
+			else if(cmd.equals("New")){
+				wannaNew=true;
+			}
+			else if(cmd.equals("Exit")){
+				//wannaExit=true;
+				try {
+					String Client=RemoteHelper.getInstance().getUserService().getClient();
+					RemoteHelper.getInstance().getUserService().logout(Client);
+					JOptionPane.showMessageDialog(null, "成功退出"); 
+				} catch (RemoteException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			}
+			else if(cmd.equals("fileList")){
+				wannaOpenFileList=true;
 			}
 		}
 	}
@@ -86,12 +120,7 @@ public class MainFrame extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			String code = textArea.getText();
-			try {
-				RemoteHelper.getInstance().getIOService().writeFile(code, "admin", "code");
-			} catch (RemoteException e1) {
-				e1.printStackTrace();
-			}
+			code = textArea.getText();
 		}
 
 	}
