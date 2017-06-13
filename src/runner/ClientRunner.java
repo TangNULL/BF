@@ -48,7 +48,6 @@ public class ClientRunner {
 		}
 		boolean AlreadyLogin=false;
 		while(!AlreadyLogin){
-		//	loginFrame = new LoginFrame();
 			Thread.sleep(10000);// µÈ´ıÊäÈëµÇÂ¼¡£¡£¡£¡£
 			String UserName=loginFrame.UserName;
 			String PassWord=loginFrame.PassWord;
@@ -79,7 +78,6 @@ public class ClientRunner {
 		Register register=new Register();
 		boolean AlreadyRegister=false;
 		while(!AlreadyRegister){
-			//register=new Register();
 			Thread.sleep(10000);// µÈ´ıÊäÈë×¢²á¡£¡£¡£¡£
 			String registerName=register.registerName;
 			String registerPass=register.registerPass;
