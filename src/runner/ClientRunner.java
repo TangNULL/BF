@@ -19,8 +19,8 @@ public class ClientRunner {
 	public static String Client=null;  // getCurrentClient方法  防止同一个账户同时登陆
 	public ClientRunner() throws InterruptedException {
 		linkToServer();
-		initGUI();
 		login();
+		initGUI();
 	}
 	
 	private void linkToServer() {
@@ -48,7 +48,7 @@ public class ClientRunner {
 		}
 		boolean AlreadyLogin=false;
 		while(!AlreadyLogin){
-			Thread.sleep(10000);// 等待输入登录。。。。
+			Thread.sleep(6000);// 等待输入登录。。。。
 			String UserName=loginFrame.UserName;
 			String PassWord=loginFrame.PassWord;
 			try {
