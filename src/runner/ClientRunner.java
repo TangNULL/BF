@@ -5,6 +5,7 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import rmi.RemoteHelper;
@@ -16,7 +17,7 @@ import ui.Register;
 
 public class ClientRunner {
 	private RemoteHelper remoteHelper;//用来和Server相接
-	public static String Client=null;  // getCurrentClient方法  防止同一个账户同时登陆
+	private MainFrame mainFrame;
 	public ClientRunner() throws InterruptedException {
 		linkToServer();
 		login();
@@ -36,10 +37,35 @@ public class ClientRunner {
 			e.printStackTrace();
 		}
 	}
-	
+/*	class myThread implements Runnable{
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			if(true){
+				try {
+					login();
+					JOptionPane.showMessageDialog(null, "又登陆了");
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			else{
+				JOptionPane.showMessageDialog(null, "登录还是没反应");
+			}
+		}
+		
+	}*/
 	private void initGUI() throws InterruptedException {
-		MainFrame mainFrame = new MainFrame();
+		mainFrame = new MainFrame();
+		synchronized(mainFrame){
+			while(mainFrame.out==false){
+				continue;
+			}
+		}
+		login();
 	}
+	
 	private void login() throws InterruptedException{
 		LoginFrame loginFrame = new LoginFrame();
 		Thread.sleep(4000);// 等待确定是否注册。。。。
@@ -53,16 +79,15 @@ public class ClientRunner {
 			String PassWord=loginFrame.PassWord;
 			try {
 				boolean canLogin=remoteHelper.getUserService().login(UserName, PassWord);
-				if(canLogin==true&&Client==null){
-					Client=UserName;
-					remoteHelper.getUserService().setClient(Client);
+				if(canLogin==true&&remoteHelper.getUserService().getClient()==null){
+					remoteHelper.getUserService().setClient(UserName);
 					JOptionPane.showMessageDialog(null, "登录成功"); 
 					loginFrame.getFrame().setVisible(false);
 					AlreadyLogin=true;
 					break;
 				}
 				else{
-					JOptionPane.showMessageDialog(null, "用户名或密码错误 ", "提示 ", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "用户名或密码错误或已登录", "提示 ", JOptionPane.ERROR_MESSAGE);
 					loginFrame.getFrame().setVisible(false);
 				}
 			} catch (RemoteException e) {
@@ -101,11 +126,6 @@ public class ClientRunner {
 			
 		}
 	}
-	public String getCurrentClient(){
-		return Client;
-	}
-	
-	
 	public void test(){
 		try {
 			System.out.println(remoteHelper.getUserService().login("admin", "123456a"));

@@ -17,7 +17,7 @@ public class LoginFrame {
 	public String UserName;
 	public String PassWord;
 	public boolean wannaRegister=false;
-	JFrame logframe;
+	public JFrame logframe;
 	public LoginFrame() {
 		logframe = new JFrame("Log in");
 		logframe.setLayout(new BorderLayout());
