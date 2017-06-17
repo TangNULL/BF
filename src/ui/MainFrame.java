@@ -14,6 +14,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -72,6 +74,8 @@ public class MainFrame extends JFrame {
 		runMenu.add(executeBFMenuItem);
 		JMenuItem executeOokMenuItem=new JMenuItem("Execute as Ook!");
 		runMenu.add(executeOokMenuItem);
+		JMenuItem versionlistMenuItem=new JMenuItem("versionList");
+		versionMenu.add(versionlistMenuItem);
 		
 		frame.setJMenuBar(menuBar);
 		
@@ -95,6 +99,8 @@ public class MainFrame extends JFrame {
 		frame.add(textArea, BorderLayout.WEST);
 		frame.add(paramtextArea, BorderLayout.EAST);
 		frame.add(filenamefield,BorderLayout.NORTH);
+		
+		
 		
 		// 鏄剧ず缁撴灉
 		resultLabel = new JLabel();
@@ -252,6 +258,9 @@ public class MainFrame extends JFrame {
 							JOptionPane.showMessageDialog(null, "文件已存在或文件夹不存在 ", "提示 ", JOptionPane.ERROR_MESSAGE);
 						}
 						currentFilepath=filepath;
+						String[] pathbranch=currentFilepath.split("\\\\");
+						String name2=pathbranch[pathbranch.length-1];
+						filenamefield.setText(name2);
 					}
 					else{
 						JOptionPane.showMessageDialog(null, "无用户 ", "提示 ", JOptionPane.ERROR_MESSAGE);
@@ -310,6 +319,40 @@ public class MainFrame extends JFrame {
 					JOptionPane.showMessageDialog(null, "无用户 ", "提示 ", JOptionPane.ERROR_MESSAGE);
 				}
 			}
+			
+			else if(cmd.equals("versionList")){
+				if(filenamefield.getText().contains(".")){
+					try {
+						//File pack=new File("E:\\学习\\大作业\\BFServer\\"+RemoteHelper.getInstance().getUserService().getClient()+"\\"+filenamefield.getText().split("\\.")[0]);
+						String result="";
+						JFileChooser choose = new JFileChooser("E:\\学习\\大作业\\BFServer\\"+RemoteHelper.getInstance().getUserService().getClient()+"\\"+filenamefield.getText().split("\\.")[0]);
+						choose.showOpenDialog(null);  
+						File file = choose.getSelectedFile();
+						FileReader fileReader;
+						try {
+							fileReader = new FileReader(file);
+							BufferedReader buffer=new BufferedReader(fileReader);
+							String Line=null;
+							while((Line=buffer.readLine())!=null){
+								result+=Line;
+							}
+							textArea.setText(result);
+						} catch (FileNotFoundException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						
+						
+					} catch (RemoteException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+				
+			}
 		}
 	}
 
@@ -319,27 +362,89 @@ public class MainFrame extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			code = textArea.getText();
 			try {
-				if(RemoteHelper.getInstance().getUserService().getClient()!=null){
+				String Forecode=RemoteHelper.getInstance().getIOService().readFile(currentFilepath, "");
+				if(Forecode.equals(code)){
+					JOptionPane.showMessageDialog(null, "未做任何改动哦~");
+					currentFilepath="";
+					filenamefield.setText("空");
+				}
+				else{
 					try {
-						RemoteHelper.getInstance().getIOService().writeFile(code, currentFilepath,"");
-						JOptionPane.showMessageDialog(null, "保存成功！");
-						currentFilepath="";
-						filenamefield.setText("空");
+						if(RemoteHelper.getInstance().getUserService().getClient()!=null){
+							try {
+								//保存该版本
+								if(filenamefield.getText().contains(".")){
+									//创建一个以当前文档名命名的文件夹（删去.bf）以存放历史版本
+									File pack=new File("E:\\学习\\大作业\\BFServer\\"+RemoteHelper.getInstance().getUserService().getClient()+"\\"+filenamefield.getText().split("\\.")[0]);
+									if(!pack.exists())
+										pack.mkdir();
+									SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+									String nextfilename=df.format(new Date());
+									File file=new File(pack.getAbsolutePath()+"\\"+nextfilename);
+									try {
+										if(!file.exists()){
+											file.createNewFile();
+										}
+										RemoteHelper.getInstance().getIOService().writeFile(code, file.getAbsolutePath(), "");
+										//历史版本只保留三个
+										String[] FileName=pack.list();
+										if(FileName.length>3){
+											File[] temp=pack.listFiles();
+											long time=temp[0].lastModified();
+											File deleteFile = null;
+											for(File tempfile:temp){
+												if(tempfile.lastModified()<time){
+													time=tempfile.lastModified();
+													deleteFile=tempfile;
+												}
+											}
+											if(deleteFile.exists()){
+												deleteFile.delete();
+											}
+											
+										}
+									} catch (IOException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
+									
+								}
+								RemoteHelper.getInstance().getIOService().writeFile(code, currentFilepath,"");
+								JOptionPane.showMessageDialog(null, "保存成功！");
+								currentFilepath="";
+								filenamefield.setText("空");
+							} catch (RemoteException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+						}
+						else{
+							JOptionPane.showMessageDialog(null, "无用户 ", "提示 ", JOptionPane.ERROR_MESSAGE);
+						}
+					} catch (HeadlessException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
 					} catch (RemoteException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
+					
 				}
-				else{
-					JOptionPane.showMessageDialog(null, "无用户 ", "提示 ", JOptionPane.ERROR_MESSAGE);
-				}
-			} catch (HeadlessException e1) {
+			} catch (RemoteException e2) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (RemoteException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				e2.printStackTrace();
 			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			
 		}
 
