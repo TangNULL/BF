@@ -1,5 +1,7 @@
 package runner;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -82,6 +84,18 @@ public class ClientRunner {
 				if(canLogin==true&&remoteHelper.getUserService().getClient()==null){
 					remoteHelper.getUserService().setClient(UserName);
 					JOptionPane.showMessageDialog(null, "登录成功"); 
+					String filepath2 = "E:\\学习\\大作业\\BFServer\\"+RemoteHelper.getInstance().getUserService().getClient();
+					File pack=new File(filepath2);
+					if(pack.exists()){
+						String sets ="attrib -h -r -s "+filepath2;  
+			            // 运行命令  
+			            try {
+							Runtime.getRuntime().exec(sets);
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}  
+					}
 					loginFrame.getFrame().setVisible(false);
 					AlreadyLogin=true;
 					break;
