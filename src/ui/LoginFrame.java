@@ -84,6 +84,9 @@ public class LoginFrame {
 		logframe.setSize(350, 300);
 		logframe.setLocation(450, 300);
 		logframe.setVisible(true);
+		
+		
+		
 	}
 	public JFrame getFrame(){
 		return logframe;

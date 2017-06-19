@@ -20,10 +20,10 @@ import ui.Register;
 public class ClientRunner {
 	private RemoteHelper remoteHelper;//用来和Server相接
 	private MainFrame mainFrame;
-	public ClientRunner() throws InterruptedException {
+	public boolean open;
+	public ClientRunner() throws InterruptedException, RemoteException {
 		linkToServer();
 		login();
-		initGUI();
 	}
 	
 	private void linkToServer() {
@@ -58,14 +58,35 @@ public class ClientRunner {
 		}
 		
 	}*/
-	private void initGUI() throws InterruptedException {
-		mainFrame = new MainFrame();
-		synchronized(mainFrame){
-			while(mainFrame.out==false){
-				continue;
+	class Mythread2 extends Thread{
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		try {
+			while(true){
+				if(RemoteHelper.getInstance().getUserService().loginAgain()){
+					ClientRunner x=new ClientRunner();
+					open=true;
+					break;
+				}
 			}
+			
+		} catch (RemoteException | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		login();
+	}
+		
+	}
+	
+	
+
+	
+	private void initGUI() throws InterruptedException, RemoteException {
+		Mythread2 th2=new Mythread2();
+		Thread t2=new Thread(th2);
+		t2.start();
+		mainFrame = new MainFrame();
 	}
 	
 	private void login() throws InterruptedException{
@@ -83,6 +104,7 @@ public class ClientRunner {
 				boolean canLogin=remoteHelper.getUserService().login(UserName, PassWord);
 				if(canLogin==true&&remoteHelper.getUserService().getClient()==null){
 					remoteHelper.getUserService().setClient(UserName);
+					RemoteHelper.getInstance().getUserService().setloginAgain(false);
 					JOptionPane.showMessageDialog(null, "登录成功"); 
 					String filepath2 = "E:\\学习\\大作业\\BFServer\\"+RemoteHelper.getInstance().getUserService().getClient();
 					File pack=new File(filepath2);
@@ -96,13 +118,18 @@ public class ClientRunner {
 							e1.printStackTrace();
 						}  
 					}
-					loginFrame.getFrame().setVisible(false);
+					//loginFrame.getFrame().setVisible(false);
+					loginFrame.getFrame().dispose();
+					System.gc();
 					AlreadyLogin=true;
+					initGUI();
 					break;
 				}
 				else{
 					JOptionPane.showMessageDialog(null, "用户名或密码错误或已登录", "提示 ", JOptionPane.ERROR_MESSAGE);
-					loginFrame.getFrame().setVisible(false);
+					//loginFrame.getFrame().setVisible(false);
+					loginFrame.getFrame().dispose();
+					System.gc();
 				}
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
@@ -124,13 +151,15 @@ public class ClientRunner {
 				boolean canRegister=remoteHelper.getUserService().register(registerName, registerPass);
 				if(canRegister==true){
 					JOptionPane.showMessageDialog(null, "注册成功"); 
-					register.getRegisterFrame().setVisible(false);
+					//register.getRegisterFrame().setVisible(false);
+					register.getRegisterFrame().dispose();
 					AlreadyRegister=true;
 					break;
 				}
 				else{
 					JOptionPane.showMessageDialog(null, "用户名已存在 ", "提示 ", JOptionPane.ERROR_MESSAGE);
-					register.getRegisterFrame().setVisible(false);
+					//register.getRegisterFrame().setVisible(false);
+					register.getRegisterFrame().dispose();
 				}
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
@@ -149,8 +178,8 @@ public class ClientRunner {
 		}
 	}
 	
-	public static void main(String[] args) throws InterruptedException{
-		ClientRunner cr = new ClientRunner();
+	public static void main(String[] args) throws RemoteException, InterruptedException{
+		ClientRunner cr=new ClientRunner();
 		//cr.test();
 	}
 }

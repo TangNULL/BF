@@ -70,7 +70,7 @@ public class MainFrame extends JFrame {
 		fileMenu.add(saveMenuItem);
 		JMenuItem exitMenuItem = new JMenuItem("Exit");
 		userMenu.add(exitMenuItem);
-		JMenuItem loginMenuItem = new JMenuItem("Log in");
+		JMenuItem loginMenuItem = new JMenuItem("Login");
 		userMenu.add(loginMenuItem);
 		JMenuItem fileListMenuItem = new JMenuItem("fileList");
 		searchMenu.add(fileListMenuItem);
@@ -309,10 +309,15 @@ public class MainFrame extends JFrame {
 					}
 				}
 			}
-			else if(cmd.equals("Log in")){
+			else if(cmd.equals("Login")){
 				try {
 					RemoteHelper.getInstance().getUserService().setloginAgain(true);
+					frame.setVisible(false);
+					frame=null;
+					System.gc();
 					out=true;
+					return;
+					
 				} catch (RemoteException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
