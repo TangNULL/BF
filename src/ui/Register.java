@@ -13,6 +13,7 @@ public class Register {
 	public String registerName;
 	public String registerPass;
 	public JFrame registerFrame;
+	public static boolean waexit;
 	public Register(){
 		registerFrame=new JFrame("Register");
 		registerFrame.setLayout(new BorderLayout());
@@ -34,8 +35,8 @@ public class Register {
 		JButton But1=new JButton("OK");
 		JButton But2=new JButton("Cancel");
 		
-		But1.setBounds(40,180,100,20);
-		But2.setBounds(100,180,100,20);
+		But1.setBounds(40,180,80,25);
+		But2.setBounds(180,180,80,25);
 		registerPanel.add(But1);
 		registerPanel.add(But2);
 		
@@ -46,6 +47,15 @@ public class Register {
 				registerName=Name.getText();
 				registerPass=Pass.getText();
 			}
+		});
+		But2.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				waexit=true;
+				registerFrame.dispose();
+			}
+			
 		});
 		
 		registerPanel.setLayout(null);

@@ -291,7 +291,6 @@ public class MainFrame extends JFrame {
 					            // 运行命令  
 					            try {
 									Runtime.getRuntime().exec(sets);
-									JOptionPane.showMessageDialog(null, "你的信息已受到保护啦");
 								} catch (IOException e1) {
 									// TODO Auto-generated catch block
 									e1.printStackTrace();
@@ -311,12 +310,18 @@ public class MainFrame extends JFrame {
 			}
 			else if(cmd.equals("Login")){
 				try {
-					RemoteHelper.getInstance().getUserService().setloginAgain(true);
-					frame.setVisible(false);
-					frame=null;
-					System.gc();
-					out=true;
-					return;
+					if(RemoteHelper.getInstance().getUserService().getClient()!=null){
+						JOptionPane.showMessageDialog(null,"你还没有退出当前用户名呢");
+					}
+					else{
+						RemoteHelper.getInstance().getUserService().setloginAgain(true);
+						frame.setVisible(false);
+						frame=null;
+						System.gc();
+						out=true;
+						return;
+					}
+					
 					
 				} catch (RemoteException e1) {
 					// TODO Auto-generated catch block
@@ -356,29 +361,35 @@ public class MainFrame extends JFrame {
 			else if(cmd.equals("versionList")){
 				if(filenamefield.getText().contains(".")){
 					try {
-						//File pack=new File("E:\\学习\\大作业\\BFServer\\"+RemoteHelper.getInstance().getUserService().getClient()+"\\"+filenamefield.getText().split("\\.")[0]);
-						String result="";
-						JFileChooser choose = new JFileChooser("E:\\学习\\大作业\\BFServer\\"+RemoteHelper.getInstance().getUserService().getClient()+"\\"+filenamefield.getText().split("\\.")[0]);
-						choose.setFileSelectionMode(JFileChooser.FILES_ONLY);
-						int i=choose.showOpenDialog(null);  
-						if(i==JFileChooser.APPROVE_OPTION){
-							File file = choose.getSelectedFile();
-							FileReader fileReader;
-							try {
-								fileReader = new FileReader(file);
-								BufferedReader buffer=new BufferedReader(fileReader);
-								String Line=null;
-								while((Line=buffer.readLine())!=null){
-									result+=Line;
+						File pack=new File("E:\\学习\\大作业\\BFServer\\"+RemoteHelper.getInstance().getUserService().getClient()+"\\"+filenamefield.getText().split("\\.")[0]);
+						if(pack.exists()){
+							String result="";
+							JFileChooser choose = new JFileChooser("E:\\学习\\大作业\\BFServer\\"+RemoteHelper.getInstance().getUserService().getClient()+"\\"+filenamefield.getText().split("\\.")[0]);
+							
+							choose.setFileSelectionMode(JFileChooser.FILES_ONLY);
+							int i=choose.showOpenDialog(null);  
+							if(i==JFileChooser.APPROVE_OPTION){
+								File file = choose.getSelectedFile();
+								FileReader fileReader;
+								try {
+									fileReader = new FileReader(file);
+									BufferedReader buffer=new BufferedReader(fileReader);
+									String Line=null;
+									while((Line=buffer.readLine())!=null){
+										result+=Line;
+									}
+									textArea.setText(result);
+								} catch (FileNotFoundException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								} catch (IOException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
 								}
-								textArea.setText(result);
-							} catch (FileNotFoundException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
+						}
+						}
+						else{
+							JOptionPane.showMessageDialog(null,"当前文件无历史版本");
 						}
 					} catch (RemoteException e1) {
 						// TODO Auto-generated catch block

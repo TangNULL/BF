@@ -79,6 +79,8 @@ public class ClientRunner {
 		
 	}
 	
+		
+	
 	
 
 	
@@ -89,10 +91,10 @@ public class ClientRunner {
 		mainFrame = new MainFrame();
 	}
 	
-	private void login() throws InterruptedException{
+	private void login() throws InterruptedException, RemoteException{
 		LoginFrame loginFrame = new LoginFrame();
 		Thread.sleep(4000);// 等待确定是否注册。。。。
-		if(loginFrame.wannaRegister==true){  //客户点击了注册按钮  希望注册
+		if(loginFrame.wannaRegister==true&&remoteHelper.getUserService().getClient()==null){  //客户点击了注册按钮  希望注册
 			register();
 		}
 		boolean AlreadyLogin=false;
@@ -127,7 +129,6 @@ public class ClientRunner {
 				}
 				else{
 					JOptionPane.showMessageDialog(null, "用户名或密码错误或已登录", "提示 ", JOptionPane.ERROR_MESSAGE);
-					//loginFrame.getFrame().setVisible(false);
 					loginFrame.getFrame().dispose();
 					System.gc();
 				}
@@ -143,30 +144,42 @@ public class ClientRunner {
 	private void register() throws InterruptedException{
 		Register register=new Register();
 		boolean AlreadyRegister=false;
+		Thread.sleep(2500);
+		if(register.waexit==true){
+			AlreadyRegister=true;
+		}
 		while(!AlreadyRegister){
 			Thread.sleep(10000);// 等待输入注册。。。。
 			String registerName=register.registerName;
 			String registerPass=register.registerPass;
-			try {
-				boolean canRegister=remoteHelper.getUserService().register(registerName, registerPass);
-				if(canRegister==true){
-					JOptionPane.showMessageDialog(null, "注册成功"); 
-					//register.getRegisterFrame().setVisible(false);
-					register.getRegisterFrame().dispose();
-					AlreadyRegister=true;
-					break;
-				}
-				else{
-					JOptionPane.showMessageDialog(null, "用户名已存在 ", "提示 ", JOptionPane.ERROR_MESSAGE);
-					//register.getRegisterFrame().setVisible(false);
-					register.getRegisterFrame().dispose();
-				}
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if(registerName.equals(null)||registerPass.equals(null)||(registerName!=null&&registerName.contains(" "))||(registerPass!=null&&registerPass.contains(" "))||(registerName!=null&&registerName.equals(""))||(registerPass!=null&&registerPass.equals(""))){
+				JOptionPane.showMessageDialog(null, "一切不得为空且不得带有空格，请重新输入"); 
+				register.getRegisterFrame().dispose();
 			}
+			else{
+				try {
+					boolean canRegister=remoteHelper.getUserService().register(registerName, registerPass);
+					if(canRegister==true){
+						JOptionPane.showMessageDialog(null, "注册成功"); 
+						register.getRegisterFrame().dispose();
+						AlreadyRegister=true;
+						break;
+					}
+					else{
+						JOptionPane.showMessageDialog(null, "用户名已存在 ", "提示 ", JOptionPane.ERROR_MESSAGE);
+						register.getRegisterFrame().dispose();
+					}
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
 			register=new Register();
 			
+		}
+		if(register.waexit==true){
+			register.getRegisterFrame().dispose();
 		}
 	}
 	public void test(){

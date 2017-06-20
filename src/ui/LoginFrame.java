@@ -40,9 +40,9 @@ public class LoginFrame {
 		JButton But2=new JButton("Cancel");
 		JButton But3=new JButton("Register");
 		
-		But1.setBounds(20,180,100,20);
-		But2.setBounds(90,180,100,20);
-		But3.setBounds(150,180,100,20);
+		But1.setBounds(20,180,85,25);
+		But2.setBounds(120,180,85,25);
+		But3.setBounds(220,180,85,25);
 		LogPanel.add(But1);
 		LogPanel.add(But2);
 		LogPanel.add(But3);
@@ -61,8 +61,9 @@ public class LoginFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				Name.setText("");
-				Pass.setText("");
+				System.exit(0);
+				/*Name.setText("");
+				Pass.setText("");*/
 			}
 		});
 		But3.addActionListener(new ActionListener(){
