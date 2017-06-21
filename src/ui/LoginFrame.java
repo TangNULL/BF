@@ -1,17 +1,23 @@
 package ui;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import ui.MainFrame.MenuItemActionListener;
+import java.rmi.RemoteException;
+import rmi.RemoteHelper;
+import runner.ClientRunner;
+
+
 
 public class LoginFrame {
 	public String UserName;
@@ -46,15 +52,85 @@ public class LoginFrame {
 		LogPanel.add(But1);
 		LogPanel.add(But2);
 		LogPanel.add(But3);
+
+		
+		class Mythread extends Thread{
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				//open=false;
+				try {
+					/*while(RemoteHelper.getInstance().getUserService().loginAgain()){
+						RemoteHelper.getInstance().getUserService().setloginAgain(false);
+						ClientRunner x=new ClientRunner();
+					}*/
+					while(true){
+						if(RemoteHelper.getInstance().getUserService().loginAgain()){
+							ClientRunner x=new ClientRunner();
+							break;
+						}
+					}
+				} catch (RemoteException | InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			}
+
+		
+		
 		
 		But1.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-			/*	logframe.setVisible(false);*/
-				UserName=Name.getText();
-				PassWord=Pass.getText();
-				//logframe.setVisible(false);
+				boolean AlreadyLogin=false;
+				while(!AlreadyLogin){
+					UserName=Name.getText();
+					PassWord=Pass.getText();
+					try {
+						boolean canLogin=RemoteHelper.getInstance().getUserService().login(UserName, PassWord);
+						if(canLogin==true&&RemoteHelper.getInstance().getUserService().getClient()==null){
+							RemoteHelper.getInstance().getUserService().setClient(UserName);
+							RemoteHelper.getInstance().getUserService().setloginAgain(false);
+							JOptionPane.showMessageDialog(null, "登录成功"); 
+							String filepath2 = "E:\\学习\\大作业\\BFServer\\"+RemoteHelper.getInstance().getUserService().getClient();
+							File pack=new File(filepath2);
+							if(pack.exists()){
+								String sets ="attrib -h -r -s "+filepath2;  
+					            // 运行命令  
+					            try {
+									Runtime.getRuntime().exec(sets);
+								} catch (IOException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}  
+							}
+							logframe.dispose();
+							System.gc();
+							AlreadyLogin=true;
+							MainFrame mainframe=new MainFrame();
+							
+							Mythread th=new Mythread();
+							Thread t=new Thread(th);
+							t.start();
+							
+							
+							
+							break;
+						}
+						else{
+							JOptionPane.showMessageDialog(null, "用户名或密码错误或已登录", "提示 ", JOptionPane.ERROR_MESSAGE);
+							logframe.dispose();
+							System.gc();
+							LoginFrame loginFrame = new LoginFrame();
+							break;
+						}
+					} catch (RemoteException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
+				}
 			}
 		});
 		But2.addActionListener(new ActionListener(){
@@ -72,6 +148,14 @@ public class LoginFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
 				wannaRegister=true;
+				try {
+					if(wannaRegister==true&&RemoteHelper.getInstance().getUserService().getClient()==null){  //客户点击了注册按钮  希望注册
+						Register register=new Register();
+					}
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			
 		});

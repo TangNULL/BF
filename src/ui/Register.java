@@ -3,11 +3,16 @@ package ui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.rmi.RemoteException;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import rmi.RemoteHelper;
 
 public class Register {
 	public String registerName;
@@ -42,10 +47,41 @@ public class Register {
 		
 		But1.addActionListener(new ActionListener(){
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e) {//点击注册
 				// TODO Auto-generated method stub
-				registerName=Name.getText();
-				registerPass=Pass.getText();
+				boolean AlreadyRegister=false;
+				while(!AlreadyRegister){
+					registerName=Name.getText();
+					registerPass=Pass.getText();
+					if(registerName.equals(null)||registerPass.equals(null)||(registerName!=null&&registerName.contains(" "))||(registerPass!=null&&registerPass.contains(" "))||(registerName!=null&&registerName.equals(""))||(registerPass!=null&&registerPass.equals(""))||registerName.contains(".")){
+						JOptionPane.showMessageDialog(null, "一切不得为空且不得带有空格，用户名不得带有.等特殊字符，请重新输入"); 
+						registerFrame.dispose();
+						Register register=new Register();
+						break;
+					}
+					else{
+						try {
+							boolean canRegister=RemoteHelper.getInstance().getUserService().register(registerName, registerPass);
+							if(canRegister==true){
+								JOptionPane.showMessageDialog(null, "注册成功"); 
+								registerFrame.dispose();
+								AlreadyRegister=true;
+								break;
+							}
+							else{
+								JOptionPane.showMessageDialog(null, "用户名已存在 ", "提示 ", JOptionPane.ERROR_MESSAGE);
+								registerFrame.dispose();
+								Register register=new Register();
+								break;
+							}
+						} catch (RemoteException e3) {
+							// TODO Auto-generated catch block
+							e3.printStackTrace();
+						}
+					}
+				}
+				
+				
 			}
 		});
 		But2.addActionListener(new ActionListener(){

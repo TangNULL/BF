@@ -57,11 +57,11 @@ public class MainFrame extends JFrame {
 		JMenu userMenu=new JMenu("User");
 		JMenu editMenu=new JMenu("Edit");
 		menuBar.add(fileMenu);
+		menuBar.add(editMenu);
 		menuBar.add(searchMenu);
 		menuBar.add(runMenu);
 		menuBar.add(versionMenu);
 		menuBar.add(userMenu);
-		menuBar.add(editMenu);
 		JMenuItem newMenuItem = new JMenuItem("New");
 		fileMenu.add(newMenuItem);
 		JMenuItem openMenuItem = new JMenuItem("Open");
@@ -72,16 +72,18 @@ public class MainFrame extends JFrame {
 		userMenu.add(exitMenuItem);
 		JMenuItem loginMenuItem = new JMenuItem("Login");
 		userMenu.add(loginMenuItem);
-		JMenuItem fileListMenuItem = new JMenuItem("fileList");
+		JMenuItem fileListMenuItem = new JMenuItem("FileList");
 		searchMenu.add(fileListMenuItem);
 		JMenuItem executeMenuItem=new JMenuItem("Execute");
 		runMenu.add(executeMenuItem);
-		JMenuItem versionlistMenuItem=new JMenuItem("versionList");
+		JMenuItem versionlistMenuItem=new JMenuItem("VersionList");
 		versionMenu.add(versionlistMenuItem);
-		JMenuItem undoMenuItem=new JMenuItem("undo");
+		JMenuItem undoMenuItem=new JMenuItem("Undo");
 		editMenu.add(undoMenuItem);
-		JMenuItem redoMenuItem=new JMenuItem("redo");
+		JMenuItem redoMenuItem=new JMenuItem("Redo");
 		editMenu.add(redoMenuItem);
+		JMenuItem deleteMenuItem=new JMenuItem("Delete");
+		editMenu.add(deleteMenuItem);
 		frame.setJMenuBar(menuBar);
 		
 		filenamefield=new JButton("当前文档");
@@ -95,6 +97,7 @@ public class MainFrame extends JFrame {
 		versionlistMenuItem.addActionListener(new MenuItemActionListener());
 		undoMenuItem.addActionListener(new MenuItemActionListener());
 		redoMenuItem.addActionListener(new MenuItemActionListener());
+		deleteMenuItem.addActionListener(new MenuItemActionListener());
 		
 		textArea = new JTextArea(25,20);
 		textArea.setText("code here");
@@ -239,14 +242,14 @@ public class MainFrame extends JFrame {
 						JOptionPane.showMessageDialog(null, "无用户 ", "提示 ", JOptionPane.ERROR_MESSAGE);
 					}
 					if(client!=null){
-						String name=JOptionPane.showInputDialog("请给你的文件取一个名字吧");
+						String name=JOptionPane.showInputDialog("请给你的文件取一个名字吧(不必写文件类型)");
 						if(name==null){
 							return;
 						}
-						else if(name==""){
-							name=JOptionPane.showInputDialog(null,"请给你的文件取一个名字吧","提示信息",JOptionPane.ERROR_MESSAGE);
-							return;
+						while(name.equals("")||name.contains(" ")||name.contains(".")){
+							name=JOptionPane.showInputDialog(null,"请给你的文件取一个名字吧(不得带有.等特殊字符且不必写文件类型)","提示信息",JOptionPane.ERROR_MESSAGE);
 						}
+						
 						String[] options = {"bf","ook"};
 					    int number= JOptionPane.showOptionDialog(MainFrame.this, "Which language do you choose?", "提示", 0, JOptionPane.QUESTION_MESSAGE, null, options, "BF");
 						String language=options[number];
@@ -257,18 +260,25 @@ public class MainFrame extends JFrame {
 							pack.mkdir();
 						//创建文件
 						String filepath="E:\\学习\\大作业\\BFServer\\"+client+"\\"+name+"."+language;
-						File file=new File(filepath);
-						try {
-							file.createNewFile();
-							JOptionPane.showMessageDialog(null, "成功创建文件 ", "提示 ", JOptionPane.INFORMATION_MESSAGE);
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							JOptionPane.showMessageDialog(null, "文件已存在或文件夹不存在 ", "提示 ", JOptionPane.ERROR_MESSAGE);
+						File dir=new File(filepath.split("\\.")[0]);
+						if(dir.exists()){
+							JOptionPane.showMessageDialog(null, "相同文件名已存在 ", "提示 ", JOptionPane.ERROR_MESSAGE);
 						}
-						currentFilepath=filepath;
-						String[] pathbranch=currentFilepath.split("\\\\");
-						String name2=pathbranch[pathbranch.length-1];
-						filenamefield.setText(name2);
+						else{
+							try {
+								File file=new File(filepath);
+								file.createNewFile();
+								JOptionPane.showMessageDialog(null, "成功创建文件 ", "提示 ", JOptionPane.INFORMATION_MESSAGE);
+								currentFilepath=filepath;
+								String[] pathbranch=currentFilepath.split("\\\\");
+								String name2=pathbranch[pathbranch.length-1];
+								filenamefield.setText(name2);
+							} catch (IOException e1) {
+								// TODO Auto-generated catch block
+								JOptionPane.showMessageDialog(null, "文件已存在或文件夹不存在 ", "提示 ", JOptionPane.ERROR_MESSAGE);
+							}
+						}
+						
 					}
 					else{
 						JOptionPane.showMessageDialog(null, "无用户 ", "提示 ", JOptionPane.ERROR_MESSAGE);
@@ -328,29 +338,27 @@ public class MainFrame extends JFrame {
 					e1.printStackTrace();
 				}
 			}
-			else if(cmd.equals("fileList")){
+			else if(cmd.equals("FileList")){
 				String client="";
 				try {
 					client=RemoteHelper.getInstance().getUserService().getClient();
 				} catch (RemoteException e2) {
 					// TODO Auto-generated catch block
 					e2.printStackTrace();
-					JOptionPane.showMessageDialog(null, "无用户 ", "提示 ", JOptionPane.ERROR_MESSAGE);
 				}
 				if(client!=null){
-					File file=new File("E:\\学习\\大作业\\BFServer\\"+client);
-					if(!file.exists()){
-						JOptionPane.showMessageDialog(null,"你还没有创建任何文件");
-					}
-					else{
-						String[] FileName=file.list();
-						String newline = System.getProperty("line.separator");
-						String myStr="";
-						for(String str:FileName){
-							if(str.contains("."))
-								myStr+=str+newline;
+					try {
+						String filepath="E:\\学习\\大作业\\BFServer\\"+client;
+						String result=RemoteHelper.getInstance().getIOService().readFileList(filepath);
+						if(result==null){
+							JOptionPane.showMessageDialog(null,"你还没有创建任何文件");
 						}
-						JOptionPane.showMessageDialog(null,myStr, "FileList", JOptionPane.INFORMATION_MESSAGE);
+						else{
+							JOptionPane.showMessageDialog(null,result, "FileList", JOptionPane.INFORMATION_MESSAGE);
+						}
+					} catch (RemoteException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
 					}
 				}
 				else{
@@ -358,7 +366,7 @@ public class MainFrame extends JFrame {
 				}
 			}
 			
-			else if(cmd.equals("versionList")){
+			else if(cmd.equals("VersionList")){
 				if(filenamefield.getText().contains(".")){
 					try {
 						File pack=new File("E:\\学习\\大作业\\BFServer\\"+RemoteHelper.getInstance().getUserService().getClient()+"\\"+filenamefield.getText().split("\\.")[0]);
@@ -396,11 +404,49 @@ public class MainFrame extends JFrame {
 						e1.printStackTrace();
 					}
 				}
+				else{
+					JOptionPane.showMessageDialog(null,"先打开一个文件才能查看呀");
+				}
 			}
-			else if(cmd.equals("undo")){
+			else if(cmd.equals("Undo")){
 				
 			}
-			else if(cmd.equals("redo")){
+			else if(cmd.equals("Redo")){
+				
+			}
+			else if(cmd.equals("Delete")){
+				File file=new File(currentFilepath);
+				if(currentFilepath!=""){
+					int n=JOptionPane.showConfirmDialog(null, "连同历史版本也会一起删除哦，确定删除？", "提示", JOptionPane.YES_NO_OPTION);  
+			        if (n==JOptionPane.YES_OPTION){  
+			        	file.delete();
+			        	String[] s=currentFilepath.split("\\.");
+			        	File dirfile=new File(s[0]);
+			        	if(dirfile.exists()&&dirfile.isDirectory()){
+			        		File[] files=dirfile.listFiles();
+			        		for(File f:files){
+			        			f.delete();
+			        		}
+			        		dirfile.delete();
+			        		JOptionPane.showMessageDialog(null, "成功删除");
+							filenamefield.setText("空");
+							currentFilepath="";
+							textArea.setText("code here");
+			        	}
+			        	else{
+			        		JOptionPane.showMessageDialog(null, "历史版本不存在或者不是一个有效目录，就先删除此文件了");
+			        		filenamefield.setText("空");
+			        		currentFilepath="";
+							textArea.setText("code here");
+			        	}
+			        }
+			        else if(n==JOptionPane.NO_OPTION){  
+			        	return;
+			        } 
+				}
+				else{
+					JOptionPane.showMessageDialog(null, "请先打开一个文件");
+				}
 				
 			}
 		}
