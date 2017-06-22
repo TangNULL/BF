@@ -60,10 +60,6 @@ public class LoginFrame {
 				// TODO Auto-generated method stub
 				//open=false;
 				try {
-					/*while(RemoteHelper.getInstance().getUserService().loginAgain()){
-						RemoteHelper.getInstance().getUserService().setloginAgain(false);
-						ClientRunner x=new ClientRunner();
-					}*/
 					while(true){
 						if(RemoteHelper.getInstance().getUserService().loginAgain()){
 							ClientRunner x=new ClientRunner();
@@ -138,8 +134,6 @@ public class LoginFrame {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				System.exit(0);
-				/*Name.setText("");
-				Pass.setText("");*/
 			}
 		});
 		But3.addActionListener(new ActionListener(){
@@ -176,19 +170,6 @@ public class LoginFrame {
 	public JFrame getFrame(){
 		return logframe;
 	}
-	/*
-	class MouseActionListener implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if(e.getActionCommand().equals("Check")){
-				e.getSource().setVisible(false);
-			}
-	        if(e.getActionCommand().equals("Cancel")){
-	        	
-	        }
-		}
-	}
-	*/
 	
 	
 }

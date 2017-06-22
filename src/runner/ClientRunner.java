@@ -40,30 +40,8 @@ public class ClientRunner {
 		}
 	}
 
-/*	class Mythread extends Thread{
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		//open=false;
-		try {
-			while(true){
-				if(RemoteHelper.getInstance().getUserService().loginAgain()){
-					open=true;
-					ClientRunner x=new ClientRunner();
-					break;
-				}
-			}
-		} catch (RemoteException | InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	}
-*/
+
 	private void initGUI() throws InterruptedException, RemoteException{
-	/*	Mythread th=new Mythread();
-		Thread t=new Thread(th);
-		t.start();*/
 		LoginFrame loginFrame = new LoginFrame();
 	}
 	

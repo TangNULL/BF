@@ -15,6 +15,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.JButton;
@@ -43,6 +44,9 @@ public class MainFrame extends JFrame {
 	public String code;
 	public static String currentFilepath="";
 	public boolean out;
+	public ArrayList<String> myList=new ArrayList<String>();
+	public static int i;
+	public static boolean wannado=false;
 	public MainFrame() {
 		// 鍒涘缓绐椾綋
 		out=false;
@@ -125,11 +129,36 @@ public class MainFrame extends JFrame {
 		frame.setLocation(400, 200);
 		frame.setVisible(true);
 		
+		Thread T=new Thread(new myThread2());
+		T.start();
+		
 	}
-	public String setExit(String username){
-		return username;
+	
+	class myThread2 implements Runnable{
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			while(true){
+				if(currentFilepath!=null){
+					String text=textArea.getText();
+					String paramtext=paramtextArea.getText();
+					if(((!text.equals(textArea.getText()))||(!paramtext.equals(paramtextArea.getText())))&&!wannado){   
+						//但凡输入区有一点不一样
+						myList.add(textArea.getText()+"_"+paramtextArea.getText());
+						i=myList.size()-1;
+					}
+				}
+				
+				
+				
+			}
+		}
+		
 	}
-
+	
+	
+	
+	
 	class MenuItemActionListener implements ActionListener {
 		/**
 		 * 瀛愯彍鍗曞搷搴斾簨浠�
@@ -409,10 +438,51 @@ public class MainFrame extends JFrame {
 				}
 			}
 			else if(cmd.equals("Undo")){
-				
+				if(currentFilepath!=""&&myList.size()>=2){
+					wannado=true;
+					i--;
+					if(i>=0){
+						if(myList.get(i).contains("_")){
+							String[] textAndparam=myList.get(i).split("_");
+							textArea.setText(textAndparam[0]);
+							paramtextArea.setText(textAndparam[1]);
+						}
+					}
+					else{
+						JOptionPane.showMessageDialog(null,"不能再撤销啦");
+					}
+				}
+				else if(currentFilepath.equals("")){
+					JOptionPane.showMessageDialog(null,"请先打开一个文件");
+				}
+				else{
+					JOptionPane.showMessageDialog(null,"不能再撤销啦");
+				}
+				wannado=false;
 			}
+			
+			
+			
 			else if(cmd.equals("Redo")){
-				
+				if(currentFilepath!=""){
+					wannado=true;
+					i++;
+					if(i<=myList.size()-1){
+						if(myList.get(i).contains("_")){
+							String[] textAndparam=myList.get(i).split("_");
+							textArea.setText(textAndparam[0]);
+							paramtextArea.setText(textAndparam[1]);
+							
+						}
+					}
+					else{
+						JOptionPane.showMessageDialog(null,"不能再重做啦");
+					}
+				}
+				else{
+					JOptionPane.showMessageDialog(null,"请先打开一个文件");
+				}
+				wannado=false;
 			}
 			else if(cmd.equals("Delete")){
 				File file=new File(currentFilepath);
@@ -432,12 +502,14 @@ public class MainFrame extends JFrame {
 							filenamefield.setText("空");
 							currentFilepath="";
 							textArea.setText("code here");
+							wannado=false;
 			        	}
 			        	else{
 			        		JOptionPane.showMessageDialog(null, "历史版本不存在或者不是一个有效目录，就先删除此文件了");
 			        		filenamefield.setText("空");
 			        		currentFilepath="";
 							textArea.setText("code here");
+							wannado=false;
 			        	}
 			        }
 			        else if(n==JOptionPane.NO_OPTION){  
@@ -468,6 +540,8 @@ public class MainFrame extends JFrame {
 						currentFilepath="";
 						filenamefield.setText("空");
 						textArea.setText("code here");
+						wannado=false;
+						myList.clear();
 					}
 					else{
 						try {
@@ -514,6 +588,8 @@ public class MainFrame extends JFrame {
 									currentFilepath="";
 									filenamefield.setText("空");
 									textArea.setText("code here");
+									wannado=false;
+									myList.clear();
 								} catch (RemoteException e1) {
 									// TODO Auto-generated catch block
 									e1.printStackTrace();
