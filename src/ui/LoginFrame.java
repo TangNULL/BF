@@ -33,10 +33,10 @@ public class LoginFrame {
 		JLabel pass=new JLabel("PassWord:");
 		JTextField Pass=new JTextField(8);
 		
-		name.setBounds(50, 50, 100, 30);
-		Name.setBounds(170,50, 100, 30);
-		pass.setBounds(50,110, 100, 30);
-		Pass.setBounds(170,110, 100, 30);
+		name.setBounds(50, 50, 150, 30);
+		Name.setBounds(170,50, 150, 30);
+		pass.setBounds(50,110, 150, 30);
+		Pass.setBounds(170,110, 150, 30);
 		LogPanel.add(name);
 		LogPanel.add(Name);
 		LogPanel.add(pass);
@@ -93,7 +93,7 @@ public class LoginFrame {
 							String filepath2 = "E:\\学习\\大作业\\BFServer\\"+RemoteHelper.getInstance().getUserService().getClient();
 							File pack=new File(filepath2);
 							if(pack.exists()){
-								String sets ="attrib -h -r -s "+filepath2;  
+								String sets ="attrib -h -r -s "+filepath2; //显示对应文件夹 
 					            // 运行命令  
 					            try {
 									Runtime.getRuntime().exec(sets);

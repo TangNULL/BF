@@ -6,9 +6,12 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.Enumeration;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.plaf.FontUIResource;
 
 import rmi.RemoteHelper;
 import service.IOService;
@@ -22,6 +25,8 @@ public class ClientRunner {
 	private MainFrame mainFrame;
 	public boolean open;
 	public ClientRunner() throws InterruptedException, RemoteException {
+		Thread th=new Thread(new myThread3());
+		th.start();
 		linkToServer();
 		initGUI();
 	}
@@ -57,9 +62,32 @@ public class ClientRunner {
 		}
 	}
 	
+	class myThread3 implements Runnable{
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			try{  
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); //设置整个窗口显示风格，这里使用系统风格  
+                FontUIResource f = new FontUIResource("微软雅黑", 0, 13); // 字体，样式（正常，斜体，加粗），字号  
+                Enumeration keys = UIManager.getDefaults().keys();  
+                while (keys.hasMoreElements()){  
+                    Object key = keys.nextElement();  
+                    Object value = UIManager.get(key);  
+                    if(value instanceof javax.swing.plaf.FontUIResource)  
+                        UIManager.put(key, f);  
+                }  
+            } catch (Exception e){  
+                e.printStackTrace();  
+            }//使用Windows风格  
+		}
+		
+	}
+	
+	
+	
+	
 	public static void main(String[] args) throws RemoteException, InterruptedException{
 		ClientRunner cr=new ClientRunner();
-		
 		//cr.test();
 	}
 }

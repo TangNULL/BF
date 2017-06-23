@@ -2,6 +2,8 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.HeadlessException;
 import java.awt.Insets;
@@ -18,6 +20,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -39,7 +43,7 @@ public class MainFrame extends JFrame {
 	private JTextArea textArea;
 	private JTextArea paramtextArea;
 	private JLabel resultLabel;
-	private JButton filenamefield;
+	private JLabel filenamefield;
 	JFrame frame;
 	public String code;
 	public static String currentFilepath="";
@@ -51,7 +55,7 @@ public class MainFrame extends JFrame {
 		// 鍒涘缓绐椾綋
 		out=false;
 		frame = new JFrame("BF Client");
-		frame.setLayout(new BorderLayout());
+		//frame.setLayout(new BorderLayout());
 
 		JMenuBar menuBar = new JMenuBar();
 		JMenu fileMenu = new JMenu("File");
@@ -60,11 +64,13 @@ public class MainFrame extends JFrame {
 		JMenu runMenu=new JMenu("Run");
 		JMenu userMenu=new JMenu("User");
 		JMenu editMenu=new JMenu("Edit");
+		BoxLayout lay=new BoxLayout(menuBar,BoxLayout.X_AXIS);
 		menuBar.add(fileMenu);
 		menuBar.add(editMenu);
 		menuBar.add(searchMenu);
 		menuBar.add(runMenu);
 		menuBar.add(versionMenu);
+		menuBar.add(Box.createHorizontalGlue());
 		menuBar.add(userMenu);
 		JMenuItem newMenuItem = new JMenuItem("New");
 		fileMenu.add(newMenuItem);
@@ -72,10 +78,12 @@ public class MainFrame extends JFrame {
 		fileMenu.add(openMenuItem);
 		JMenuItem saveMenuItem = new JMenuItem("Save");
 		fileMenu.add(saveMenuItem);
-		JMenuItem exitMenuItem = new JMenuItem("Exit");
-		userMenu.add(exitMenuItem);
 		JMenuItem loginMenuItem = new JMenuItem("Login");
 		userMenu.add(loginMenuItem);
+		JMenuItem logoutMenuItem = new JMenuItem("Logout");
+		userMenu.add(logoutMenuItem);
+		JMenuItem exitMenuItem = new JMenuItem("Exit");
+		userMenu.add(exitMenuItem);
 		JMenuItem fileListMenuItem = new JMenuItem("FileList");
 		searchMenu.add(fileListMenuItem);
 		JMenuItem executeMenuItem=new JMenuItem("Execute");
@@ -90,7 +98,7 @@ public class MainFrame extends JFrame {
 		editMenu.add(deleteMenuItem);
 		frame.setJMenuBar(menuBar);
 		
-		filenamefield=new JButton("当前文档");
+		filenamefield=new JLabel("当前文档",JLabel.CENTER);
 		newMenuItem.addActionListener(new MenuItemActionListener());
 		openMenuItem.addActionListener(new MenuItemActionListener());
 		exitMenuItem.addActionListener(new MenuItemActionListener());
@@ -98,6 +106,7 @@ public class MainFrame extends JFrame {
 		saveMenuItem.addActionListener(new SaveActionListener());
 		executeMenuItem.addActionListener(new MenuItemActionListener());
 		loginMenuItem.addActionListener(new MenuItemActionListener());
+		logoutMenuItem.addActionListener(new MenuItemActionListener());
 		versionlistMenuItem.addActionListener(new MenuItemActionListener());
 		undoMenuItem.addActionListener(new MenuItemActionListener());
 		redoMenuItem.addActionListener(new MenuItemActionListener());
@@ -108,26 +117,100 @@ public class MainFrame extends JFrame {
 		textArea.setMargin(new Insets(10, 10, 10, 10));
 		textArea.setBackground(Color.LIGHT_GRAY);
 		paramtextArea = new JTextArea(25,20);
+		paramtextArea.setAlignmentX(CENTER_ALIGNMENT);
 		paramtextArea.setText("param here");
 		paramtextArea.setMargin(new Insets(10, 10, 10, 10));
-		frame.add(textArea, BorderLayout.WEST);
-		frame.add(paramtextArea, BorderLayout.EAST);
-		frame.add(filenamefield,BorderLayout.NORTH);
-		textArea.setLineWrap(true);
+		
+		frame.setLayout(new GridBagLayout());
+		GridBagConstraints ctr1 = new GridBagConstraints();
+        ctr1.gridx = 0;
+        ctr1.gridy = 0;
+        ctr1.gridwidth=2;
+        ctr1.gridheight=1;
+        ctr1.fill = GridBagConstraints.BOTH;
+        frame.add(filenamefield,ctr1);
+        
+		
+        GridBagConstraints ctr2 = new GridBagConstraints();
+        ctr2.gridx =0;
+        ctr2.gridy =1;
+        ctr2.gridwidth=2;
+        ctr2.gridheight=11;
+        ctr2.weightx=100;
+        ctr2.weighty=100;
+        ctr2.fill = GridBagConstraints.BOTH;
+        frame.add(textArea,ctr2);
+        
+        
+        
+        GridBagConstraints ctr3 = new GridBagConstraints();
+        ctr3.gridx =0;
+        ctr3.gridy =13;
+        ctr3.gridwidth=1;
+        ctr3.gridheight=2;
+     //   ctr3.ipadx=200;
+     //   ctr3.ipady=96;
+        ctr3.weightx=0;
+        ctr3.weighty=0;
+        ctr3.fill = GridBagConstraints.BOTH;
+        frame.add(paramtextArea,ctr3);
+        
+        paramtextArea.setLineWrap(true);
+		//把定义的JTextArea放到JScrollPane里面去 
+		JScrollPane scroll2 = new JScrollPane(paramtextArea); 
+		//设置垂直滚动条自动出现 
+		scroll2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED); 
+		// 鏄剧ず缁撴灉
+		GridBagConstraints ctr6 = new GridBagConstraints();
+        ctr6.gridx =0;
+        ctr6.gridy =13;
+        ctr6.gridwidth=1;
+        ctr6.gridheight=2;
+        ctr6.weightx=100;
+        ctr6.weighty=100;
+        ctr6.fill = GridBagConstraints.BOTH;
+        frame.add(scroll2,ctr6);
+        
+        
+        
+        textArea.setLineWrap(true);
 		//把定义的JTextArea放到JScrollPane里面去 
 		JScrollPane scroll = new JScrollPane(textArea); 
 		//设置垂直滚动条自动出现 
 		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED); 
-		frame.add(scroll, BorderLayout.WEST);
 		// 鏄剧ず缁撴灉
-		resultLabel = new JLabel();
-		resultLabel.setText("Result here");
-		frame.add(resultLabel, BorderLayout.SOUTH);
+        
+        GridBagConstraints ctr5 = new GridBagConstraints();
+        ctr5.gridx =0;
+        ctr5.gridy =1;
+        ctr5.gridwidth=2;
+        ctr5.weightx=100;
+        ctr5.weighty=100;
+        ctr5.fill = GridBagConstraints.BOTH;
+        frame.add(scroll,ctr5);
+        
 
+        
+        
+		resultLabel = new JLabel("Result here",JLabel.CENTER);
+        GridBagConstraints ctr4 = new GridBagConstraints();
+        ctr4.gridx =1;
+        ctr4.gridy =13;
+        ctr4.gridwidth=1;
+        ctr4.gridheight=2;
+        ctr4.ipadx=150;
+       // ctr4.ipady=96;
+        ctr4.weightx=0;
+        ctr4.weighty=0;
+        ctr4.fill = GridBagConstraints.BOTH;
+        frame.add(resultLabel,ctr4);
+        
+  
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(500, 400);
 		frame.setLocation(400, 200);
 		frame.setVisible(true);
+		
 		
 		Thread T=new Thread(new myThread2());
 		T.start();
@@ -156,8 +239,7 @@ public class MainFrame extends JFrame {
 		
 	}
 	
-	
-	
+
 	
 	class MenuItemActionListener implements ActionListener {
 		/**
@@ -217,32 +299,6 @@ public class MainFrame extends JFrame {
 					}
 					currentFilepath=filepath;
 				}
-			
-				
-				/*String result="";
-				JFileChooser choose = new JFileChooser("E:\\");
-				//fd.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);  
-				choose.showOpenDialog(null);  
-				File file = choose.getSelectedFile();  
-				String filepath=file.getAbsolutePath();
-				try {
-					FileReader fileReader=new FileReader(file);
-					BufferedReader buffer=new BufferedReader(fileReader);
-					String Line=null;
-					while((Line=buffer.readLine())!=null){
-						result=result+Line;
-					}
-					textArea.setText(result);
-				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				*/
-				
-				
 			} 
 			else if (cmd.equals("Execute")) {
 				String result="";
@@ -258,7 +314,7 @@ public class MainFrame extends JFrame {
 				resultLabel.setText(result);		
 			}
 			else if(cmd.equals("New")){
-				String client="quq";
+				String client="";
 				if(currentFilepath!=""){
 					JOptionPane.showMessageDialog(null, "还有文件没保存呢亲...","提示",JOptionPane.INFORMATION_MESSAGE);
 				}
@@ -315,6 +371,14 @@ public class MainFrame extends JFrame {
 				}
 			}
 			else if(cmd.equals("Exit")){
+				if(currentFilepath!=""){
+					JOptionPane.showMessageDialog(null, "还有文件没保存呢亲...","提示",JOptionPane.INFORMATION_MESSAGE);
+				}
+				else{
+					System.exit(0);
+				}
+			}
+			else if(cmd.equals("Logout")){
 				if(currentFilepath!=""){
 					JOptionPane.showMessageDialog(null, "还有文件没保存呢亲...","提示",JOptionPane.INFORMATION_MESSAGE);
 				}
@@ -530,7 +594,7 @@ public class MainFrame extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			code = textArea.getText();
 			if(currentFilepath==""){
-				JOptionPane.showMessageDialog(null, "你没有打开文件怎么保存？？");
+				JOptionPane.showMessageDialog(null, "你没有打开文件怎么保存呢？？");
 			}
 			else{
 				try {
@@ -540,6 +604,7 @@ public class MainFrame extends JFrame {
 						currentFilepath="";
 						filenamefield.setText("空");
 						textArea.setText("code here");
+						resultLabel.setText("Result here");
 						wannado=false;
 						myList.clear();
 					}
@@ -588,6 +653,7 @@ public class MainFrame extends JFrame {
 									currentFilepath="";
 									filenamefield.setText("空");
 									textArea.setText("code here");
+									resultLabel.setText("Result here");
 									wannado=false;
 									myList.clear();
 								} catch (RemoteException e1) {
