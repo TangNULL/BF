@@ -10,6 +10,8 @@ import java.awt.Insets;
 import java.awt.MenuBar;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -211,35 +213,66 @@ public class MainFrame extends JFrame {
 		frame.setLocation(400, 200);
 		frame.setVisible(true);
 		
-		
-		Thread T=new Thread(new myThread2());
-		T.start();
-		
-	}
-	
-	class myThread2 implements Runnable{
-		@Override
-		public void run() {
-			// TODO Auto-generated method stub
-			while(true){
-				if(currentFilepath!=null){
-					String text=textArea.getText();
-					String paramtext=paramtextArea.getText();
-					if(((!text.equals(textArea.getText()))||(!paramtext.equals(paramtextArea.getText())))&&!wannado){   
-						//但凡输入区有一点不一样
-						myList.add(textArea.getText()+"_"+paramtextArea.getText());
-						i=myList.size()-1;
-					}
-				}
-				
-				
+		textArea.addKeyListener(new KeyListener(){
+
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				// TODO Auto-generated method stub
 				
 			}
-		}
-		
-	}
-	
 
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				if(currentFilepath!=null){
+					if(paramtextArea.getText()==""){
+						myList.add(textArea.getText()+"_"+" ");
+					}
+					else{
+						myList.add(textArea.getText()+"_"+paramtextArea.getText());
+					}
+					i=myList.size()-1;
+				}
+			}
+		
+			
+		});
+		
+		paramtextArea.addKeyListener(new KeyListener(){
+
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				if(currentFilepath!=null){
+					if(paramtextArea.getText()==""){
+						myList.add(textArea.getText()+"_"+" ");
+					}
+					else{
+						myList.add(textArea.getText()+"_"+paramtextArea.getText());
+					}
+					i=myList.size()-1;
+				}
+			}
+		});
+	}
 	
 	class MenuItemActionListener implements ActionListener {
 		/**
@@ -447,7 +480,7 @@ public class MainFrame extends JFrame {
 							JOptionPane.showMessageDialog(null,"你还没有创建任何文件");
 						}
 						else{
-							JOptionPane.showMessageDialog(null,result, "FileList", JOptionPane.INFORMATION_MESSAGE);
+							JOptionPane.showMessageDialog(null,result, "FileList", JOptionPane.PLAIN_MESSAGE);
 						}
 					} catch (RemoteException e1) {
 						// TODO Auto-generated catch block
@@ -506,7 +539,7 @@ public class MainFrame extends JFrame {
 					wannado=true;
 					i--;
 					if(i>=0){
-						if(myList.get(i).contains("_")){
+						if(myList.get(i).split("_").length>=2){
 							String[] textAndparam=myList.get(i).split("_");
 							textArea.setText(textAndparam[0]);
 							paramtextArea.setText(textAndparam[1]);
@@ -532,7 +565,7 @@ public class MainFrame extends JFrame {
 					wannado=true;
 					i++;
 					if(i<=myList.size()-1){
-						if(myList.get(i).contains("_")){
+						if(myList.get(i).split("_").length>=2){
 							String[] textAndparam=myList.get(i).split("_");
 							textArea.setText(textAndparam[0]);
 							paramtextArea.setText(textAndparam[1]);
@@ -604,6 +637,7 @@ public class MainFrame extends JFrame {
 						currentFilepath="";
 						filenamefield.setText("空");
 						textArea.setText("code here");
+						paramtextArea.setText("param here");
 						resultLabel.setText("Result here");
 						wannado=false;
 						myList.clear();
@@ -653,6 +687,7 @@ public class MainFrame extends JFrame {
 									currentFilepath="";
 									filenamefield.setText("空");
 									textArea.setText("code here");
+									paramtextArea.setText("param here");
 									resultLabel.setText("Result here");
 									wannado=false;
 									myList.clear();
