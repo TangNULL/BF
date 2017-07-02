@@ -18,7 +18,6 @@ public class Register {
 	public String registerName;
 	public String registerPass;
 	public JFrame registerFrame;
-	public static boolean waexit;
 	public Register(){
 		registerFrame=new JFrame("Register");
 		registerFrame.setLayout(new BorderLayout());
@@ -66,7 +65,6 @@ public class Register {
 								JOptionPane.showMessageDialog(null, "注册成功"); 
 								registerFrame.dispose();
 								AlreadyRegister=true;
-								break;
 							}
 							else{
 								JOptionPane.showMessageDialog(null, "用户名已存在 ", "提示 ", JOptionPane.ERROR_MESSAGE);
@@ -88,7 +86,6 @@ public class Register {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				waexit=true;
 				registerFrame.dispose();
 			}
 			

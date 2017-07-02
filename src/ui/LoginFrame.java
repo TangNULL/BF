@@ -52,30 +52,7 @@ public class LoginFrame {
 		LogPanel.add(But1);
 		LogPanel.add(But2);
 		LogPanel.add(But3);
-
-		
-		class LogAgainthread implements Runnable{
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				//open=false;
-				try {
-					while(true){
-						if(RemoteHelper.getInstance().getUserService().loginAgain()){
-							ClientRunner x=new ClientRunner();
-							break;
-						}
-					}
-				} catch (RemoteException | InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			}
-
-		
-		
-		
+	
 		But1.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -88,7 +65,6 @@ public class LoginFrame {
 						boolean canLogin=RemoteHelper.getInstance().getUserService().login(UserName, PassWord);
 						if(canLogin==true&&RemoteHelper.getInstance().getUserService().getClient()==null){
 							RemoteHelper.getInstance().getUserService().setClient(UserName);
-							RemoteHelper.getInstance().getUserService().setloginAgain(false);
 							JOptionPane.showMessageDialog(null, "登录成功"); 
 							String filepath2 = "E:\\学习\\大作业\\BFServer\\"+RemoteHelper.getInstance().getUserService().getClient();
 							File pack=new File(filepath2);//为新用户创建其对应文件夹
@@ -103,19 +79,15 @@ public class LoginFrame {
 								}  
 							}
 							logframe.dispose();
-							System.gc();
 							AlreadyLogin=true;
 							MainFrame mainframe=new MainFrame();//进入主面板
-						
-							Thread thread=new Thread(new LogAgainthread());
-							thread.start();//使得在mainframe点击了login可以实现再次登录
 							
 							break;
 						}
 						else{
 							JOptionPane.showMessageDialog(null, "用户名或密码错误或已登录", "提示 ", JOptionPane.ERROR_MESSAGE);
 							logframe.dispose();
-							System.gc();
+						//	System.gc();
 							LoginFrame loginFrame = new LoginFrame();
 							break;
 						}
@@ -164,9 +136,6 @@ public class LoginFrame {
 		
 		
 	}
-	/*public JFrame getFrame(){
-		return logframe;
-	}*/
 	
 	
 }

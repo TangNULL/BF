@@ -52,7 +52,6 @@ public class MainFrame extends JFrame {
 	public boolean out;
 	public ArrayList<String> myList=new ArrayList<String>();
 	public static int i;
-	public static boolean wannado=false;
 	public MainFrame() {
 		// 鍒涘缓绐椾綋
 		out=false;
@@ -61,17 +60,17 @@ public class MainFrame extends JFrame {
 
 		JMenuBar menuBar = new JMenuBar();
 		JMenu fileMenu = new JMenu("File");
-		JMenu searchMenu = new JMenu("Search");
-		JMenu versionMenu = new JMenu("Version");
+		JMenu viewMenu = new JMenu("View");
+	//	JMenu versionMenu = new JMenu("Version");
 		JMenu runMenu=new JMenu("Run");
 		JMenu userMenu=new JMenu("User");
 		JMenu editMenu=new JMenu("Edit");
 		BoxLayout lay=new BoxLayout(menuBar,BoxLayout.X_AXIS);
 		menuBar.add(fileMenu);
 		menuBar.add(editMenu);
-		menuBar.add(searchMenu);
+		menuBar.add(viewMenu);
 		menuBar.add(runMenu);
-		menuBar.add(versionMenu);
+		//menuBar.add(versionMenu);
 		menuBar.add(Box.createHorizontalGlue());
 		menuBar.add(userMenu);
 		JMenuItem newMenuItem = new JMenuItem("New");
@@ -87,11 +86,11 @@ public class MainFrame extends JFrame {
 		JMenuItem exitMenuItem = new JMenuItem("Exit");
 		userMenu.add(exitMenuItem);
 		JMenuItem fileListMenuItem = new JMenuItem("FileList");
-		searchMenu.add(fileListMenuItem);
+		viewMenu.add(fileListMenuItem);
 		JMenuItem executeMenuItem=new JMenuItem("Execute");
 		runMenu.add(executeMenuItem);
 		JMenuItem versionlistMenuItem=new JMenuItem("VersionList");
-		versionMenu.add(versionlistMenuItem);
+		viewMenu.add(versionlistMenuItem);
 		JMenuItem undoMenuItem=new JMenuItem("Undo");
 		editMenu.add(undoMenuItem);
 		JMenuItem redoMenuItem=new JMenuItem("Redo");
@@ -273,7 +272,7 @@ public class MainFrame extends JFrame {
 					try {
 						if(RemoteHelper.getInstance().getUserService().getClient()!=null){
 							try {
-								filepath = "E:\\学习\\大作业\\BFServer\\"+RemoteHelper.getInstance().getUserService().getClient()+"\\";
+								filepath = "E:\\学习\\大作业\\BFServer\\"+RemoteHelper.getInstance().getUserService().getClient()+"\\";//得到用户名对应的文件夹
 								String filename=JOptionPane.showInputDialog("你要打开的文件名是什么呀？（文件类型别忘了加）");
 								if(filename==null){
 									return;
@@ -289,7 +288,7 @@ public class MainFrame extends JFrame {
 										filepath+=filename;
 									}
 									else{
-										JOptionPane.showMessageDialog(null, "文件读取出错啦");
+										JOptionPane.showMessageDialog(null, "文件读取出错啦或者文件根本不存在");
 										filepath="";
 									}
 								}
@@ -313,7 +312,7 @@ public class MainFrame extends JFrame {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-					currentFilepath=filepath;
+					currentFilepath=filepath;  //设置当前文件路径
 				}
 			} 
 			else if (cmd.equals("Execute")) {
@@ -370,7 +369,7 @@ public class MainFrame extends JFrame {
 								File file=new File(filepath);
 								file.createNewFile();
 								JOptionPane.showMessageDialog(null, "成功创建文件 ", "提示 ", JOptionPane.INFORMATION_MESSAGE);
-								myList.add(" _ ");//方便撤销
+								myList.add(textArea.getText()+"_ ");//方便撤销
 								currentFilepath=filepath;
 								String[] pathbranch=currentFilepath.split("\\\\");
 								String name2=pathbranch[pathbranch.length-1];
@@ -434,16 +433,19 @@ public class MainFrame extends JFrame {
 						JOptionPane.showMessageDialog(null,"你还没有退出当前用户名呢");
 					}
 					else{
-						RemoteHelper.getInstance().getUserService().setloginAgain(true);
 						frame.setVisible(false);
 						frame=null;
-						System.gc();
-						out=true;
+					//	System.gc();
+					//	out=true;
+						ClientRunner x=new ClientRunner();
 						return;
 					}
 					
 					
 				} catch (RemoteException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (InterruptedException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
@@ -520,7 +522,6 @@ public class MainFrame extends JFrame {
 			}
 			else if(cmd.equals("Undo")){
 				if(currentFilepath!=""&&myList.size()>=2){
-					wannado=true;
 					i--;
 					if(i>=0){
 						if(myList.get(i).split("_").length>=2){
@@ -539,14 +540,12 @@ public class MainFrame extends JFrame {
 				else{
 					JOptionPane.showMessageDialog(null,"不能再撤销啦");
 				}
-				wannado=false;
 			}
 			
 			
 			
 			else if(cmd.equals("Redo")){
 				if(currentFilepath!=""){
-					wannado=true;
 					i++;
 					if(i<=myList.size()-1){
 						if(myList.get(i).split("_").length>=2){
@@ -563,7 +562,6 @@ public class MainFrame extends JFrame {
 				else{
 					JOptionPane.showMessageDialog(null,"请先打开一个文件");
 				}
-				wannado=false;
 			}
 			else if(cmd.equals("Delete")){
 				File file=new File(currentFilepath);
@@ -586,7 +584,7 @@ public class MainFrame extends JFrame {
 							textArea.setText("code here");
 							paramtextArea.setText("param here");
 							resultLabel.setText("Result");
-							wannado=false;
+						//	wannado=false;
 			        	}
 			        	else{
 			        		JOptionPane.showMessageDialog(null, "历史版本不存在或者不是一个有效目录，就先删除此文件了");
@@ -596,7 +594,7 @@ public class MainFrame extends JFrame {
 							textArea.setText("code here");
 							paramtextArea.setText("param here");
 							resultLabel.setText("Result");
-							wannado=false;
+						//	wannado=false;
 			        	}
 			        }
 			        else if(n==JOptionPane.NO_OPTION){  
@@ -629,7 +627,7 @@ public class MainFrame extends JFrame {
 						textArea.setText("code here");
 						paramtextArea.setText("param here");
 						resultLabel.setText("Result");
-						wannado=false;
+						//wannado=false;
 						myList.clear();
 					}
 					else{
@@ -654,7 +652,7 @@ public class MainFrame extends JFrame {
 											String[] FileName=pack.list();
 											while(FileName.length>3){
 												File[] temp=pack.listFiles();
-												long time=temp[0].lastModified();
+												long time=temp[0].lastModified();//找到最早的版本删去
 												File deleteFile = null;
 												for(File tempfile:temp){
 													if(tempfile.lastModified()<=time){
@@ -679,7 +677,7 @@ public class MainFrame extends JFrame {
 									textArea.setText("code here");
 									paramtextArea.setText("param here");
 									resultLabel.setText("Result");
-									wannado=false;
+								//	wannado=false;
 									myList.clear();
 								} catch (RemoteException e1) {
 									// TODO Auto-generated catch block
