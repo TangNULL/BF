@@ -29,9 +29,9 @@ public class LoginFrame {
 		logframe.setLayout(new BorderLayout());
 		JPanel LogPanel=new JPanel();
 		JLabel name=new JLabel("User:");
-		JTextField Name=new JTextField(8);
+		JTextField Name=new JTextField();
 		JLabel pass=new JLabel("PassWord:");
-		JTextField Pass=new JTextField(8);
+		JTextField Pass=new JTextField();
 		
 		name.setBounds(50, 50, 150, 30);
 		Name.setBounds(170,50, 150, 30);
@@ -54,7 +54,7 @@ public class LoginFrame {
 		LogPanel.add(But3);
 
 		
-		class Mythread extends Thread{
+		class LogAgainthread implements Runnable{
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
@@ -91,9 +91,9 @@ public class LoginFrame {
 							RemoteHelper.getInstance().getUserService().setloginAgain(false);
 							JOptionPane.showMessageDialog(null, "登录成功"); 
 							String filepath2 = "E:\\学习\\大作业\\BFServer\\"+RemoteHelper.getInstance().getUserService().getClient();
-							File pack=new File(filepath2);
+							File pack=new File(filepath2);//为新用户创建其对应文件夹
 							if(pack.exists()){
-								String sets ="attrib -h -r -s "+filepath2; //显示对应文件夹 
+								String sets ="attrib -h -r -s "+filepath2; //显示之前隐藏的对应文件夹 
 					            // 运行命令  
 					            try {
 									Runtime.getRuntime().exec(sets);
@@ -105,13 +105,10 @@ public class LoginFrame {
 							logframe.dispose();
 							System.gc();
 							AlreadyLogin=true;
-							MainFrame mainframe=new MainFrame();
-							
-							Mythread th=new Mythread();
-							Thread t=new Thread(th);
-							t.start();
-							
-							
+							MainFrame mainframe=new MainFrame();//进入主面板
+						
+							Thread thread=new Thread(new LogAgainthread());
+							thread.start();//使得在mainframe点击了login可以实现再次登录
 							
 							break;
 						}
@@ -167,9 +164,9 @@ public class LoginFrame {
 		
 		
 	}
-	public JFrame getFrame(){
+	/*public JFrame getFrame(){
 		return logframe;
-	}
+	}*/
 	
 	
 }

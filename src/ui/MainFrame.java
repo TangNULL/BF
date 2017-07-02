@@ -43,7 +43,7 @@ import runner.ClientRunner;
 
 public class MainFrame extends JFrame {
 	private JTextArea textArea;
-	private JTextArea paramtextArea;
+	private JTextField paramtextArea;
 	private JLabel resultLabel;
 	private JLabel filenamefield;
 	JFrame frame;
@@ -118,7 +118,7 @@ public class MainFrame extends JFrame {
 		textArea.setText("code here");
 		textArea.setMargin(new Insets(10, 10, 10, 10));
 		textArea.setBackground(Color.LIGHT_GRAY);
-		paramtextArea = new JTextArea(25,20);
+		paramtextArea = new JTextField();
 		paramtextArea.setAlignmentX(CENTER_ALIGNMENT);
 		paramtextArea.setText("param here");
 		paramtextArea.setMargin(new Insets(10, 10, 10, 10));
@@ -152,27 +152,10 @@ public class MainFrame extends JFrame {
         ctr3.gridheight=2;
      //   ctr3.ipadx=200;
      //   ctr3.ipady=96;
-        ctr3.weightx=0;
-        ctr3.weighty=0;
+        ctr3.weightx=100;
+        ctr3.weighty=100;
         ctr3.fill = GridBagConstraints.BOTH;
         frame.add(paramtextArea,ctr3);
-        
-        paramtextArea.setLineWrap(true);
-		//把定义的JTextArea放到JScrollPane里面去 
-		JScrollPane scroll2 = new JScrollPane(paramtextArea); 
-		//设置垂直滚动条自动出现 
-		scroll2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED); 
-		// 鏄剧ず缁撴灉
-		GridBagConstraints ctr6 = new GridBagConstraints();
-        ctr6.gridx =0;
-        ctr6.gridy =13;
-        ctr6.gridwidth=1;
-        ctr6.gridheight=2;
-        ctr6.weightx=100;
-        ctr6.weighty=100;
-        ctr6.fill = GridBagConstraints.BOTH;
-        frame.add(scroll2,ctr6);
-        
         
         
         textArea.setLineWrap(true);
@@ -186,7 +169,7 @@ public class MainFrame extends JFrame {
         ctr5.gridx =0;
         ctr5.gridy =1;
         ctr5.gridwidth=2;
-        ctr5.weightx=100;
+        ctr5.weightx=0;
         ctr5.weighty=100;
         ctr5.fill = GridBagConstraints.BOTH;
         frame.add(scroll,ctr5);
@@ -194,7 +177,7 @@ public class MainFrame extends JFrame {
 
         
         
-		resultLabel = new JLabel("Result here",JLabel.CENTER);
+		resultLabel = new JLabel("Result",JLabel.CENTER);
         GridBagConstraints ctr4 = new GridBagConstraints();
         ctr4.gridx =1;
         ctr4.gridy =13;
@@ -202,7 +185,7 @@ public class MainFrame extends JFrame {
         ctr4.gridheight=2;
         ctr4.ipadx=150;
        // ctr4.ipady=96;
-        ctr4.weightx=0;
+        ctr4.weightx=50;
         ctr4.weighty=0;
         ctr4.fill = GridBagConstraints.BOTH;
         frame.add(resultLabel,ctr4);
@@ -387,6 +370,7 @@ public class MainFrame extends JFrame {
 								File file=new File(filepath);
 								file.createNewFile();
 								JOptionPane.showMessageDialog(null, "成功创建文件 ", "提示 ", JOptionPane.INFORMATION_MESSAGE);
+								myList.add(" _ ");//方便撤销
 								currentFilepath=filepath;
 								String[] pathbranch=currentFilepath.split("\\\\");
 								String name2=pathbranch[pathbranch.length-1];
@@ -596,16 +580,22 @@ public class MainFrame extends JFrame {
 			        		}
 			        		dirfile.delete();
 			        		JOptionPane.showMessageDialog(null, "成功删除");
+			        		myList.clear();
 							filenamefield.setText("空");
 							currentFilepath="";
 							textArea.setText("code here");
+							paramtextArea.setText("param here");
+							resultLabel.setText("Result");
 							wannado=false;
 			        	}
 			        	else{
 			        		JOptionPane.showMessageDialog(null, "历史版本不存在或者不是一个有效目录，就先删除此文件了");
 			        		filenamefield.setText("空");
+			        		myList.clear();
 			        		currentFilepath="";
 							textArea.setText("code here");
+							paramtextArea.setText("param here");
+							resultLabel.setText("Result");
 							wannado=false;
 			        	}
 			        }
@@ -638,7 +628,7 @@ public class MainFrame extends JFrame {
 						filenamefield.setText("空");
 						textArea.setText("code here");
 						paramtextArea.setText("param here");
-						resultLabel.setText("Result here");
+						resultLabel.setText("Result");
 						wannado=false;
 						myList.clear();
 					}
@@ -688,7 +678,7 @@ public class MainFrame extends JFrame {
 									filenamefield.setText("空");
 									textArea.setText("code here");
 									paramtextArea.setText("param here");
-									resultLabel.setText("Result here");
+									resultLabel.setText("Result");
 									wannado=false;
 									myList.clear();
 								} catch (RemoteException e1) {

@@ -25,8 +25,8 @@ public class ClientRunner {
 	private MainFrame mainFrame;
 	public boolean open;
 	public ClientRunner() throws InterruptedException, RemoteException {
-		Thread th=new Thread(new myThread3());
-		th.start();
+		Thread thread=new Thread(new ChangeStyleThread());
+		thread.start();
 		linkToServer();
 		initGUI();
 	}
@@ -62,7 +62,7 @@ public class ClientRunner {
 		}
 	}
 	
-	class myThread3 implements Runnable{
+	class ChangeStyleThread implements Runnable{
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
